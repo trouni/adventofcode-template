@@ -23,6 +23,8 @@ class AdventDay
       # puts " - #{(Benchmark.measure { print new.first_part.inspect  }.real * 1000).round(3)}ms"
       puts "Result - #{new.send(part)}"
       puts
+      # Copy result to clipboard
+      IO.popen('pbcopy', 'w') { |f| f << result }
     end
   end
 
