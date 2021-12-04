@@ -8,7 +8,6 @@ class Setup
       # SKIP_FIRST_PART = true
 
       def first_part(input)
-        pp input
       end
 
       def second_part(input)
@@ -17,8 +16,18 @@ class Setup
       private
 
       def convert_data(data)
-        super
+        super.map do |line|
+          pp line
+        end
       end
+
+      # def test_input
+      #   # Use this method to override the test data.
+      #   # If you need to keep the leading spaces, you can replace the HEREDOC `<<~` with `<<-`.
+      #   <<~DATA
+      #     CUSTOM_TEST_DATA
+      #   DATA
+      # end
     end
 
     Day%{number}.solve

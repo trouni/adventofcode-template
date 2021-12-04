@@ -37,7 +37,7 @@ class InputFetcher
     )
     raise "Input doesn't appear to be accessible (yet?)" if res.status == 404
     
-    File.write(INPUT_FILE_PATH, res.body)
+    File.write(INPUT_FILE_PATH % { day: day_number }, res.body)
     res.body
   end
 
