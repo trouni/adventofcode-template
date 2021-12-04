@@ -1,10 +1,13 @@
 require_relative 'common'
 
 class Day14 < AdventDay
-  def first_part
+  FIRST_PART_TEST_VALUE = nil
+  SECOND_PART_TEST_VALUE = nil
+
+  def first_part(input = data)
   end
 
-  def second_part
+  def second_part(input = data)
   end
 
   private

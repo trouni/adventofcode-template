@@ -43,6 +43,9 @@ require_relative 'common'
 # 789
 
 class Day1 < AdventDay
+  FIRST_PART_TEST_VALUE = nil
+  SECOND_PART_TEST_VALUE = nil
+
   def first_part
     input.last(2).sum
   end

@@ -3,33 +3,65 @@ require 'dotenv/load'
 
 Bundler.require
 
-require 'benchmark'
+# require 'benchmark'
 require 'net/http'
 
 class AdventDay
   SESSION = ENV['SESSION']
   YEAR = ENV['YEAR']
+  FIRST_PART_TEST_VALUE = nil
+  SECOND_PART_TEST_VALUE = nil
 
   def self.solve
-    puts " - #{(Benchmark.measure { print self.new.first_part.inspect  }.real * 1000).round(3)}ms"
-    puts " - #{(Benchmark.measure { print self.new.second_part.inspect }.real * 1000).round(3)}ms"
+    %i[first_part second_part].each do |part|
+      puts
+      puts ">>>>>>>>>> #{part.to_s.upcase.gsub('_', ' ')} <<<<<<<<<<"
+      puts
+      break unless run_test(part)
+
+      puts
+      # puts " - #{(Benchmark.measure { print new.first_part.inspect  }.real * 1000).round(3)}ms"
+      puts "Result - #{new.send(part)}"
+      puts
+    end
   end
 
-  def first_part; end
-  def second_part; end
+  def self.run_test(part)
+    if test_data.any?
+      actual = new.send(part, test_data)
+      expected = const_get "#{part.upcase}_TEST_VALUE"
+      if actual == expected
+        puts '✅ TEST PASSED! 🥳'
+      else
+        puts '❌ TEST FAILED!'
+        puts "Expected: #{expected}"
+        puts "Got:      #{actual}"
+      end
+      return actual == expected
+    else
+      puts "No test data available in inputs/#{new.day_number}_test" 
+    end
+  end
+
+  def first_part(input = data); end
+  def second_part(input = data); end
 
   def convert_data(data)
     data.split("\n")
   end
 
-  def input
-    input_path = Pathname.new('inputs/'+day_number)
+  def data(path = "inputs/#{day_number}")
+    input_path = Pathname.new(path)
     input_data = if input_path.exist?
       File.read(input_path)
     else
       download_input
     end
     convert_data(input_data)
+  end
+
+  def self.test_data
+    self.new.data("inputs/#{self.new.day_number}_test")
   end
 
   INPUT_BASE_URL = 'https://adventofcode.com'.freeze
@@ -43,6 +75,8 @@ class AdventDay
       { 'Cookie' => "session=#{SESSION}" },
     )
     raise "Input doesn't appear to be accessible (yet?)" if res.status == 404
+    test_path = "inputs/#{day_number}_test"
+    `touch #{test_path}` unless Pathname.new(test_path).exist?
     File.write('inputs/'+day_number, res.body)
     res.body
   end
@@ -112,6 +146,9 @@ class Setup
     require_relative 'common'
 
     class Day%{number} < AdventDay
+  FIRST_PART_TEST_VALUE = nil
+  SECOND_PART_TEST_VALUE = nil
+
       def first_part
       end
 
