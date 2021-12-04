@@ -27,9 +27,9 @@ class AdventDay
   end
 
   def self.run_test(part)
-    if test_data.any? && (FIRST_PART_TEST_VALUE || SECOND_PART_TEST_VALUE)
+    expected = const_get "#{part.upcase}_TEST_VALUE"
+    if expected && test_data.any?
       actual = new.send(part, test_data)
-      expected = const_get "#{part.upcase}_TEST_VALUE"
       if actual == expected
         puts '✅ TEST PASSED! 🥳'
       else
@@ -40,7 +40,8 @@ class AdventDay
       end
       return actual == expected
     else
-      puts "No test data available in inputs/#{new.day_number}_test" 
+      puts "No test data available in inputs/#{new.day_number}_test" if test_data.empty?
+      puts "Test values missing" unless expected
     end
   end
 
