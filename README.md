@@ -43,17 +43,24 @@ require_relative 'common'
 # 789
 
 class Day1 < AdventDay
+  # Add the results given in the aoc challenge instructions for each part here
+  FIRST_PART_TEST_VALUE = 1234
+  SECOND_PART_TEST_VALUE = 567890
+
   def first_part
+    # Code the solution for the first part here
     input.last(2).sum
   end
 
   def second_part
+    # Code the solution for the second part here
     input.last(2).map(&:to_s).map(&:reverse).map(&:to_i).sum
   end
 
   private
 
   def convert_data(data)
+    # Convert the input data. `super` returns an array of lines from the input file.
     super.map(&:to_i)
   end
 end
@@ -63,8 +70,19 @@ Day1.solve
 ```shell
 % ruby day-01.rb
 
-1245 - 0.342ms
-1641 - 0.108ms
+>>>>>>>>>> FIRST PART <<<<<<<<<<
+
+✅ TEST PASSED! 🥳
+
+Result - 11536
+
+
+>>>>>>>>>> SECOND PART <<<<<<<<<<
+
+❌ TEST FAILED!
+
+Expected: 567890
+Got:      423530
 ```
 
 ### Test data
