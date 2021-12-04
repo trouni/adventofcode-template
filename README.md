@@ -1,5 +1,5 @@
 # advent-of-code-template
-[Advent of Code 🎄](https://adventofcode.com) solving framework by `@Aquaj`
+[Advent of Code 🎄](https://adventofcode.com) solving framework by `@Aquaj`, tweaked by `@trouni`
 
 This repository template provides:
 - some common useful libraries (run `bundle install` to fetch them)
@@ -26,6 +26,8 @@ Each file for the 25 days of the AoC are prefilled with an empty AdventDay templ
 - The `#convert_data` method will be used to turn the input from the challenge (dynamically fetched from the website) into
     whatever structure you want it to be. Result of this method call is then accessible through the `#input` method.
     Default (`super`) will simply split line by line.
+- The `FIRST_PART_TEST_VALUE` and `SECOND_PART_TEST_VALUE` constants are meant to hold the result of the examples given in
+    AoC challenge instructions. The corresponding test data should be copy-pasted into the `/inputs/<day>_test` file.
 
 The first call to `#input` will download the input from AoC's website (provided the `SESSION` env var is set) and store
 it in `inputs/<day-number>` to cache it. Those files are not tracked by git.
@@ -37,22 +39,17 @@ Running the file (`ruby day-01.rb`) will display the result of your `#first_part
 ```ruby
 require_relative 'common'
 
-## file contents of input/1
-# 123
-# 456
-# 789
-
 class Day1 < AdventDay
-  # Add the results given in the aoc challenge instructions for each part here
+  # Add the results given in the AoC challenge instructions for each part here
   FIRST_PART_TEST_VALUE = 1234
   SECOND_PART_TEST_VALUE = 567890
 
-  def first_part
+  def first_part(input)
     # Code the solution for the first part here
     input.last(2).sum
   end
 
-  def second_part
+  def second_part(input)
     # Code the solution for the second part here
     input.last(2).map(&:to_s).map(&:reverse).map(&:to_i).sum
   end
@@ -67,7 +64,7 @@ end
 
 Day1.solve
 ```
-```shell
+```
 % ruby day-01.rb
 
 >>>>>>>>>> FIRST PART <<<<<<<<<<
@@ -84,58 +81,6 @@ Result - 11536
 Expected: 567890
 Got:      423530
 ```
-
-### Test data
-
-You can provide your own test input if you want by adding a `inputs/debug-{day}` file in your file structure, then
-running the solution with the `--debug` flag.
-
-**Example:**
-
-```shell
-% echo '234\n567\890' > inputs/debug-1
-% ruby day-01.rb # Still works as previously
-
-1245 - 0.342ms
-1641 - 0.108ms
-
-% ruby day-01.rb --debug # Runs on debug input
-
-801 - 0.236ms
-1197 - 0.182ms
-```
-
-Another way to provide your own test data is to override the `#debug_input` method in your `DayX` class:
-
-```ruby
-require_relative 'common'
-
-class Day1 < AdventDay
-  def first_part
-    input.last(2).sum
-  end
-
-  def second_part
-    input.last(2).map(&:to_s).map(&:reverse).map(&:to_i).sum
-  end
-
-  private
-
-  def convert_data(data)
-    super.map(&:to_i)
-  end
-
-  def debug_data
-    "234\n567\n890" # Formatted like the input !- PRE #convert_data -!
-  end
-end
-
-Day1.solve
-```
-
-**⚠️  Caution: the result of `#debug_input` will still be fed to `convert_data`, to test the whole solution —
-be careful to have it return a string formatted similarly to the input you're going to solve later.**
-
 
 ## Utility methods
 

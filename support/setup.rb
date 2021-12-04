@@ -3,10 +3,15 @@ class Setup
     require_relative 'common'
 
     class Day%{number} < AdventDay
-      def first_part
+      FIRST_PART_TEST_VALUE = nil
+      SECOND_PART_TEST_VALUE = nil
+      # SKIP_FIRST_PART = true
+
+      def first_part(input)
+        pp input
       end
 
-      def second_part
+      def second_part(input)
       end
 
       private

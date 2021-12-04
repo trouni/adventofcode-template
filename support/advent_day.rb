@@ -1,47 +1,20 @@
-require 'benchmark'
-
 require_relative 'input_fetcher'
+require_relative 'view'
 
 class AdventDay
-  SESSION = ENV['SESSION']
-  YEAR = ENV['YEAR']
   FIRST_PART_TEST_VALUE = nil
   SECOND_PART_TEST_VALUE = nil
+  SKIP_FIRST_PART = false
 
   def self.solve
-    %i[first_part second_part].each do |part|
-      puts
-      puts ">>>>>>>>>> #{part.to_s.upcase.gsub('_', ' ')} <<<<<<<<<<"
-      puts
-      break unless run_test(part)
+    parts = self::SKIP_FIRST_PART ? [:second_part] : %i[first_part second_part]
+    parts.each do |part|
+      View.display_section_header(part.to_s.upcase.gsub('_', ' '))
+      break unless check_test_data(part)
 
       result = new.send(part, new.data)
-      puts
-      print "Result: "
-      puts " - #{(Benchmark.measure { print result.inspect }.real * 1000).round(3)}ms"
-      puts
-      # Copy result to clipboard
-      IO.popen('pbcopy', 'w') { |f| f << result }
-    end
-  end
-
-  def self.run_test(part)
-    expected = const_get "#{part.upcase}_TEST_VALUE"
-    if expected && test_data.any?
-      actual = new.send(part, test_data)
-      puts
-      if actual == expected
-        puts '✅ TEST PASSED! 🥳'
-      else
-        puts '❌ TEST FAILED!'
-        puts
-        puts "Expected: #{expected}"
-        puts "Got:      #{actual}"
-      end
-      return actual == expected
-    else
-      puts "No test data available in inputs/#{new.day_number}_test" if test_data.empty?
-      puts "Test values missing" unless expected
+      View.display_result(result)
+      View.copy_to_clipboard(result)
     end
   end
 
@@ -52,35 +25,37 @@ class AdventDay
     data.split("\n")
   end
 
-  def data(path = "inputs/#{day_number}")
-    input_path = Pathname.new(path)
-    input_data = if input_path.exist?
-      File.read(input_path)
+  def data(test: false)
+    return @input if defined?(@input)
+    # Using hook methods instead of calling InputFetcher directly
+    input_data = test ? debug_input : source_input
+    @input ||= convert_data(input_data)
+  end
+
+  def self.check_test_data(part)
+    expected = const_get "#{part.upcase}_TEST_VALUE"
+    test_data = self.new.data(test: true)
+
+    if expected && test_data.any?
+      actual = new.send(part, test_data)
+      test_passed = actual == expected
+      test_passed ? View.test_passed : View.test_failed(actual, expected)
+      return test_passed
     else
-      download_input
+      puts "No test data available in inputs/#{new.day_number}_test" if test_data.empty?
+      puts "Test values missing" unless expected
+      return true
     end
-    convert_data(input_data)
   end
 
-  def self.test_data
-    self.new.data("inputs/#{self.new.day_number}_test")
+  # HOOK for subclass override
+  def source_input
+    InputFetcher.new(day_number, debug: false).get
   end
 
-  INPUT_BASE_URL = 'https://adventofcode.com'.freeze
-  INPUT_PATH_SCHEME = '/%{year}/day/%{number}/input'.freeze
-
-  def download_input
-    raise "Cannot download input without a session cookie" unless SESSION
-    res = Faraday.get(
-      INPUT_BASE_URL + INPUT_PATH_SCHEME % { year: YEAR, number: day_number },
-      nil,
-      { 'Cookie' => "session=#{SESSION}" },
-    )
-    raise "Input doesn't appear to be accessible (yet?)" if res.status == 404
-    test_path = "inputs/#{day_number}_test"
-    `touch #{test_path}` unless Pathname.new(test_path).exist?
-    File.write('inputs/'+day_number, res.body)
-    res.body
+  # HOOK for subclass override
+  def debug_input
+    InputFetcher.new(day_number, debug: true).get
   end
 
   def day_number
