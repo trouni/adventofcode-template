@@ -19,7 +19,7 @@ class AdventDay
       puts
       break unless run_test(part)
 
-      result = new.send(part)
+      result = new.send(part, new.data)
       puts
       print "Result: "
       puts " - #{(Benchmark.measure { print result.inspect }.real * 1000).round(3)}ms"
@@ -33,6 +33,7 @@ class AdventDay
     expected = const_get "#{part.upcase}_TEST_VALUE"
     if expected && test_data.any?
       actual = new.send(part, test_data)
+      puts
       if actual == expected
         puts '✅ TEST PASSED! 🥳'
       else
@@ -48,8 +49,8 @@ class AdventDay
     end
   end
 
-  def first_part(input = data); end
-  def second_part(input = data); end
+  def first_part(input); end
+  def second_part(input); end
 
   def convert_data(data)
     data.split("\n")
@@ -154,10 +155,10 @@ class Setup
       FIRST_PART_TEST_VALUE = nil
       SECOND_PART_TEST_VALUE = nil
 
-      def first_part(input = data)
+      def first_part(input)
       end
 
-      def second_part(input = data)
+      def second_part(input)
       end
 
       private

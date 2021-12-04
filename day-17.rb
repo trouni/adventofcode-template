@@ -4,10 +4,10 @@ class Day17 < AdventDay
   FIRST_PART_TEST_VALUE = nil
   SECOND_PART_TEST_VALUE = nil
 
-  def first_part(input = data)
+  def first_part(input)
   end
 
-  def second_part(input = data)
+  def second_part(input)
   end
 
   private
