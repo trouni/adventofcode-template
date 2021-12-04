@@ -27,13 +27,14 @@ class AdventDay
   end
 
   def self.run_test(part)
-    if test_data.any?
+    if test_data.any? && (FIRST_PART_TEST_VALUE || SECOND_PART_TEST_VALUE)
       actual = new.send(part, test_data)
       expected = const_get "#{part.upcase}_TEST_VALUE"
       if actual == expected
         puts '✅ TEST PASSED! 🥳'
       else
         puts '❌ TEST FAILED!'
+        puts
         puts "Expected: #{expected}"
         puts "Got:      #{actual}"
       end
@@ -146,13 +147,13 @@ class Setup
     require_relative 'common'
 
     class Day%{number} < AdventDay
-  FIRST_PART_TEST_VALUE = nil
-  SECOND_PART_TEST_VALUE = nil
+      FIRST_PART_TEST_VALUE = nil
+      SECOND_PART_TEST_VALUE = nil
 
-      def first_part
+      def first_part(input = data)
       end
 
-      def second_part
+      def second_part(input = data)
       end
 
       private
